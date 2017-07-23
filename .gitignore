@@ -1,3 +1,10 @@
+# Custom
+data/*
+config.py
+
+# Pycharm
+.idea/workspace.xml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
