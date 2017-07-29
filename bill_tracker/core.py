@@ -4,6 +4,10 @@ from datetime import timedelta
 from datetime import datetime as dt
 from email.mime.text import MIMEText
 import config as cfg
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 __version__ = 'v1.0'
@@ -29,7 +33,7 @@ def all_bills_to_json():
         json.dump(db_dict, json_data)
 
 
-def send_email():
+def send_email(DEBUG=False):
     bills_due = ''
     bills_past_due = ''
     recently_paid = ''
@@ -54,14 +58,18 @@ def send_email():
             cfg.email_title, Bills.current_outstanding_total,
             date.strftime('%m-%d-%Y'))))
     msg = header + MIMEText(body).as_string()
-    cfg.server.ehlo()
-    cfg.server.starttls()
-    with open(cfg.pw_file, 'r') as f:
-        password = f.read()
-    password = password[::-1]
-    cfg.server.login(cfg.from_address, password)
-    cfg.server.sendmail(cfg.from_address, cfg.to_addresses, msg)
-    cfg.server.close()
+
+    if DEBUG:
+        logger.debug(msg)
+    else:
+        cfg.email_server.ehlo()
+        cfg.email_server.starttls()
+        with open(cfg.pw_file, 'r') as f:
+            password = f.read()
+        password = password[::-1]
+        cfg.email_server.login(cfg.from_address, password)
+        cfg.email_server.sendmail(cfg.from_address, cfg.to_addresses, msg)
+        cfg.email_server.close()
 
 
 def check_due_dates():
