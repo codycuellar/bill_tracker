@@ -9,9 +9,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-__version__ = 'v1.0'
-
-
 current_bills = []
 
 
