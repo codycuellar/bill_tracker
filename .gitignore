@@ -1,6 +1,6 @@
 # Custom
 data/*
-config.py
+config_local*
 
 # Pycharm
 .idea/workspace.xml
