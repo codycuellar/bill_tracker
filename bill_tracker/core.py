@@ -1,7 +1,6 @@
-import os
 import json
-from datetime import timedelta
 from datetime import datetime as dt
+from datetime import timedelta
 from email.mime.text import MIMEText
 import config as cfg
 import logging
@@ -97,7 +96,7 @@ class Bills(object):
     def update_calendar(cls):
         today = dt.today()
         logger.debug('Today is: %s' % today)
-        for x in range(14):
+        for x in range(1, 15):
             cls.next_two_weeks.append((today + timedelta(x)).date())
         next_two_weeks_str = cls.dates_to_str(cls.next_two_weeks)
         logger.debug('Next two weeks: %s' % next_two_weeks_str)
@@ -107,6 +106,11 @@ class Bills(object):
         logger.debug('Past three days: %s' % past_three_days)
 
     def __init__(self, json_load=False, **kwargs):
+        # TODO: Fix due date logic
+        # Currnently, the due dates are convoluted. When creating the bill for
+        # the first time, it should set up date objects, or some sort of rule
+        # that will dynamically create date objects. The current setup does not
+        # allow for multiple due dates per month, and can break easily.
         self.name = None
         self.category = None
         self.bill_account_type = None
@@ -180,39 +184,57 @@ class Bills(object):
             due_date, manual)
 
     def to_json(self):
-        json = self.__dict__.copy()
-        if json['due_date']:
-            json['due_date'] = json['due_date'].strftime('%Y-%m-%d')
-        return json
+        json_dict = self.__dict__.copy()
+        if json_dict['due_date']:
+            json_dict['due_date'] = json_dict['due_date'].strftime('%Y-%m-%d')
+        return json_dict
 
     def pay_bill(self):
         """Pay manual bills"""
+        logger.info('Paying bill %s' % self.name)
         if self.outstanding_balance:
+            logger.info('Subtracting outstanding balance.')
             self.outstanding_balance -= self.amount_due
+            logger.debug('Outstanding balance for %s is %s' % (
+                self.name, self.outstanding_balance))
         self.mark_paid()
 
     def mark_paid(self):
         """Update the paid status of a bill."""
+        logger.info('Marking bill %s as paid' % self.name)
         self.amount_due = 0.0
         self.paid = True
         self.due = False
         self.overdue = False
+        status = self.get_status_as_str()
+        logger.debug(status)
+
+    def get_status_as_str(self):
+        return 'Status for %s: Automatic: %s - Amount Due: %s - Due ' \
+               'Date: %s - Due: %s - Paid: %s - Overdue: %s' % (
+                self.name, self.automatic, self.amount_due, self.due_date,
+                self.due, self.paid, self.overdue)
 
     def set_status(self):
         """
         This function first updates the due day if it's in the next two weeks.
         :return: 
         """
-        # Set the due date if bill is due in next two weeks.
+        # Set the next due date
         for day in self.next_two_weeks:
             if (    day.year in self.due_year and
                     day.month in self.due_month and
                     day.day == self.due_day):
+                logger.info('%s is in next two weeks on %s' % (self.name, day))
                 self.due_date = day  # datetime object
+                break
 
+        # TODO: This logic is a bit confusing. Create flowchart and restructure
         # Set attributes for next two weeks
         if self.due_date in self.next_two_weeks:  # all automatic bills
             if self.automatic:
+                logger.info('Setting bill %s as due on %s' % (self.name,
+                                                              self.due_date))
                 self.due = True
                 self.paid = False
                 self.amount_due = self.bill_amount
@@ -221,11 +243,21 @@ class Bills(object):
                 self.amount_due = self.bill_amount
             else:
                 self.due = False
+            status = self.get_status_as_str()
+            logger.debug(status)
+
         # Set attributes for paid / past-due bills
         elif self.due_date in self.past_three_days:
+            logger.info('Bill %s in past three days: %s' % (
+                self.name, self.due_date))
             if self.automatic:  # for auto-pay bills
                 self.pay_bill()
         elif self.automatic:  # automatic bills
+            logger.info('Removing automatic bill %s from past_three_days' %
+                         self.name)
             self.mark_paid()
         elif not self.automatic and self.due:  # manual bills
+            logger.info('Manual bill %s still due.' % self.name)
             self.overdue = True
+            status = self.get_status_as_str()
+            logger.debug(status)

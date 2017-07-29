@@ -10,6 +10,7 @@ def main():
     core.all_bills_to_json()
     core.send_email(DEBUG=True)
 
+
 if __name__ == '__main__':
     logger = logging.getLogger()
     cfg.configure_logging(logger, logname='notify',
