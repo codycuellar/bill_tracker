@@ -51,7 +51,7 @@ def send_email(DEBUG=False):
             bills_due += formatted
         elif bill.overdue:
             bills_past_due += formatted
-        elif bill.paid and bill.due in bill.past_three_days:
+        elif bill.paid and bill.due_date in bill.past_three_days:
             recently_paid += formatted
     body = 'Total amount due in next two weeks: $%s\n\n' \
            'BILLS DUE:\n%s\n\n' \
