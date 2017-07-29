@@ -13,14 +13,15 @@ logger = logging.getLogger(__name__)
 __version__ = 'v1.0'
 
 
-json_db_path = os.path.join(cfg.data_dir, 'bills_db.json')
 current_bills = []
 
 
 def load_json():
-    with open(json_db_path, 'r') as json_data:
+    logger.info('loading JSON file %s' % cfg.json_db_path)
+    with open(cfg.json_db_path, 'r') as json_data:
         bills_dict = json.load(json_data)
     for bill in bills_dict:
+        logger.debug(bill)
         current_bills.append(Bills(json_load=True, **bill))
     Bills.categories.sort()
 
@@ -29,8 +30,16 @@ def all_bills_to_json():
     db_dict = []
     for bill in current_bills:
         db_dict.append(bill.to_json())
-    with open(json_db_path, 'w') as json_data:
+    with open(cfg.json_db_path, 'w') as json_data:
         json.dump(db_dict, json_data)
+
+
+def check_due_dates():
+    Bills.update_calendar()
+    for bill in current_bills:
+        bill.set_status()
+        if bill.due:
+            Bills.current_outstanding_total += bill.amount_due
 
 
 def send_email(DEBUG=False):
@@ -72,14 +81,6 @@ def send_email(DEBUG=False):
         cfg.email_server.close()
 
 
-def check_due_dates():
-    Bills.update_calendar()
-    for bill in current_bills:
-        bill.set_status()
-        if bill.due:
-            Bills.current_outstanding_total += bill.amount_due
-
-
 class Bills(object):
 
     categories = []
@@ -89,12 +90,21 @@ class Bills(object):
     past_three_days = []
 
     @classmethod
+    def dates_to_str(cls, dates):
+        return [date.strftime('%m-%d-%Y') for date in dates]
+
+    @classmethod
     def update_calendar(cls):
         today = dt.today()
+        logger.debug('Today is: %s' % today)
         for x in range(14):
             cls.next_two_weeks.append((today + timedelta(x)).date())
+        next_two_weeks_str = cls.dates_to_str(cls.next_two_weeks)
+        logger.debug('Next two weeks: %s' % next_two_weeks_str)
         for x in range(3):
             cls.past_three_days.append((today - timedelta(x)).date())
+        past_three_days = cls.dates_to_str(cls.past_three_days)
+        logger.debug('Past three days: %s' % past_three_days)
 
     def __init__(self, json_load=False, **kwargs):
         self.name = None
