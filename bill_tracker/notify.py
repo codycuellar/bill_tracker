@@ -5,9 +5,6 @@ import config as cfg
 import argparse
 
 
-logger = logging.getLogger()
-
-
 def main(DEBUG=False):
     core.load_json()
     core.check_due_dates()
@@ -16,6 +13,8 @@ def main(DEBUG=False):
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true', default=False,
                         help='Enable debug mode.')
