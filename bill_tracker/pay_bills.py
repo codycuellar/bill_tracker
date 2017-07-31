@@ -26,5 +26,5 @@ if __name__ == '__main__':
             else:
                 print 'Bill not paid.'
                 continue
-                
+
     core.all_bills_to_json()
