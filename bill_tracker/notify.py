@@ -27,7 +27,7 @@ if __name__ == '__main__':
                               console_level=logging.DEBUG)
     else:
         cfg.configure_logging(logger, logname='notify',
-                              log_level=logging.info,
+                              log_level=logging.INFO,
                               file_level=logging.INFO,
                               console_level=logging.DEBUG)
     main(DEBUG=args.debug)

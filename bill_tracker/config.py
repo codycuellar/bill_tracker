@@ -10,14 +10,14 @@ logger = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 data_dir = path.expanduser('~/data')
 json_db_path = path.join(data_dir, 'bills_db.json')
-pw_file = path.join('password.txt')  # needs overridden in config_local
 
 
 # -----------------------------------------------------------------------------
 # EMAIL
 # -----------------------------------------------------------------------------
-from_address = 'your@email.com'
-to_addresses = [from_address]
+email_from_address = 'your@email.com'
+email_to_addresses = [email_from_address]
+email_pw_path = 'None'
 email_title = 'User'  # Name for email subject
 email_server = smtplib.SMTP("smtp.gmail.com", 587)
 
@@ -64,5 +64,7 @@ def configure_logging(logger, log_level=logging.WARNING,
 
 try:
     from config_local import *
+    print 'testing'
 except:
+    print
     logger.error('Could not load local configs. Program may not work.')

@@ -58,7 +58,7 @@ def send_email(DEBUG=False):
             bills_past_due, recently_paid)
     date = dt.today()
     header = 'From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n' % (
-        'noreply@gmail.com', ', '.join(cfg.to_addresses),
+        'noreply@gmail.com', ', '.join(cfg.email_to_addresses),
         ('%s Bill Updates $%s - %s' % (
             cfg.email_title, Bills.current_outstanding_total,
             date.strftime('%m-%d-%Y'))))
@@ -69,11 +69,12 @@ def send_email(DEBUG=False):
     else:
         cfg.email_server.ehlo()
         cfg.email_server.starttls()
-        with open(cfg.pw_file, 'r') as f:
+        with open(cfg.email_pw_path, 'r') as f:
             password = f.read()
         password = password[::-1]
-        cfg.email_server.login(cfg.from_address, password)
-        cfg.email_server.sendmail(cfg.from_address, cfg.to_addresses, msg)
+        cfg.email_server.login(cfg.email_from_address, password)
+        cfg.email_server.sendmail(cfg.email_from_address,
+                                  cfg.email_to_addresses, msg)
         cfg.email_server.close()
 
 
