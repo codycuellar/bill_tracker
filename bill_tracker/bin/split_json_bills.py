@@ -2,7 +2,7 @@ import os
 import json
 from bill_tracker import core
 
-core.load_json()
+core.load_bills()
 
 os.chdir(os.path.dirname(__file__))
 os.chdir('../../data/bills')

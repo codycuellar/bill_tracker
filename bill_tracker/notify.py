@@ -6,7 +6,7 @@ import argparse
 
 
 def main(DEBUG=False):
-    core.load_json()
+    core.load_bills()
     core.check_due_dates()
     core.all_bills_to_json()
     core.send_email(DEBUG=DEBUG)

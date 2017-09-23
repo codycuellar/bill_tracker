@@ -4,17 +4,17 @@ import core
 def category_print():
     print "\nThese are the current categories available. Enter a new name to " \
           "add a new category."
-    for category in core.Bills.categories:
+    for category in core.Bill.categories:
         print category
     while True:
         usr_input = raw_input('\nCategory: ')
-        if usr_input in core.Bills.categories:
+        if usr_input in core.Bill.categories:
             return usr_input
         else:
             print "\nDo you want to add '%s' as a new category? (y/n)" % \
                   usr_input
             if raw_input() in ['y', 'yes', '']:
-                core.Bills.categories.append(usr_input)
+                core.Bill.categories.append(usr_input)
                 return usr_input
             else:
                 '\nPlease enter a new category.'
@@ -72,4 +72,4 @@ if __name__ == '__main__':
                 'amount': raw_input('\nBill amount: $').replace(',', ''),
                 }
 
-    core.current_bills.append(core.Bills(**obj_dict))
+    core.current_bills.append(core.Bill(**obj_dict))

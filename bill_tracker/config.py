@@ -23,26 +23,17 @@ email_server = smtplib.SMTP("smtp.gmail.com", 587)
 
 
 # -----------------------------------------------------------------------------
-# DB
-# -----------------------------------------------------------------------------
-db_name = 'billdb'
-db_user = 'billuser'
-db_hostname = 'localhost'
-db_pw = 'pwfile'
-
-
-# -----------------------------------------------------------------------------
 # Logging
 # -----------------------------------------------------------------------------
-def configure_logging(logger, log_level=logging.WARNING,
+def configure_logging(ext_logger, log_level=logging.WARNING,
                       file_level=logging.WARNING, console_level=logging.DEBUG,
                       logname=None):
-    logger.setLevel(log_level)
+    ext_logger.setLevel(log_level)
 
     # Setup file logging
     date = time.strftime('%Y%m%d')
     if not logname:
-        logname = logger.name
+        logname = ext_logger.name
     logfile = '%s_%s.log' % (date, logname)
     logpath = path.join(data_dir, 'logs', logfile)
 
@@ -58,13 +49,11 @@ def configure_logging(logger, log_level=logging.WARNING,
     console_formatter = logging.Formatter('%(levelname)s: %(message)s')
     console_handler.setFormatter(console_formatter)
 
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    ext_logger.addHandler(file_handler)
+    ext_logger.addHandler(console_handler)
 
 
 try:
-    from config_local import *
-    print 'testing'
+    from .config_local import *
 except:
-    print
     logger.error('Could not load local configs. Program may not work.')

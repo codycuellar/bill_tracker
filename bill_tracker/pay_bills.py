@@ -12,7 +12,7 @@ if __name__ == '__main__':
                           file_level=logging.INFO,
                           console_level=logging.DEBUG)
 
-    core.load_json()
+    core.load_bills()
 
     for bill in [b for b in core.current_bills if not b.automatic]:
         if bill.due:
