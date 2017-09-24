@@ -54,6 +54,6 @@ def configure_logging(ext_logger, log_level=logging.WARNING,
 
 
 try:
-    from .config_local import *
+    from config_local import *
 except:
-    logger.error('Could not load local configs. Program may not work.')
+    print('Could not load local configs. Program may not work.')

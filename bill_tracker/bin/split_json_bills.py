@@ -21,11 +21,7 @@ for bill in bills_dict:
     bill.set_status()
     current_bills.append(bill)
 
-
-
-
 os.chdir(os.path.join(os.path.dirname(cfg.json_db_path), 'bills'))
-
 
 for bill in current_bills:
     filepath = os.path.join(os.getcwd(), bill.name + '.json')

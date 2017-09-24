@@ -15,10 +15,11 @@ current_bills = []
 
 def load_bills():
 	json_path = os.path.join(cfg.data_dir, 'bills')
+	logger.debug(json_path)
 	json_files = [j for j in os.listdir(json_path) if j.endswith('.json')]
 	for j in json_files:
-		logger.info('loading JSON file %s' % cfg.json_db_path)
-		with open(j, 'r') as json_data:
+		logger.info('loading JSON file %s' % j)
+		with open(os.path.join(json_path, j), 'r') as json_data:
 			bill = json.load(json_data)
 		logger.debug(bill)
 		current_bills.append(Bill(**bill))
@@ -26,11 +27,10 @@ def load_bills():
 
 
 def all_bills_to_json():
-	db_dict = []
+	json_path = os.path.join(cfg.data_dir, 'bills')
 	for bill in current_bills:
-		db_dict.append(bill.to_json())
-	with open(cfg.json_db_path, 'w') as json_data:
-		json.dump(db_dict, json_data)
+		with open(os.path.join(json_path, bill.name), 'w') as f:
+			f.write(bill.to_json())
 
 
 def check_due_dates():
@@ -51,7 +51,7 @@ def send_email(DEBUG=False):
 			bills_due += formatted
 		elif bill.overdue:
 			bills_past_due += formatted
-		elif bill.paid or bill.next_due_date in bill.past_three_days:
+		elif bill.paid:
 			recently_paid += formatted
 	body = 'Total amount due in next week: $%s\n\n' \
 		   'BILLS DUE:\n%s\n\n' \
@@ -120,12 +120,13 @@ class Bill(object):
 		self.due = due  # True if due in 2 weeks
 		self.paid = paid  # Needs manually updated unless 'automatic' is False
 		self.overdue = overdue  # For manual bills only
-		self.outstanding_balance = outstanding_balance # For credit cards and loans
+		self.outstanding_balance = outstanding_balance  # For credit cards
+		# and loans
 		Bill.categories.append(self.category)
 		due_dates = []
 		if next_due_date:
 			self.next_due_date = dt.datetime.strptime(
-				next_due_date, '%Y-%m-%d')
+				next_due_date, '%Y-%m-%d').date()
 		else:
 			for year in self.due_year:
 				for month in self.due_month:
@@ -156,7 +157,7 @@ class Bill(object):
 			manual = ' -- Manual'
 		try:
 			due_date = self.next_due_date.strftime('%b %d')
-		except:
+		except AttributeError:
 			due_date = 'Unknown'
 		return '\n\t%s - $%s (%s)%s' % (
 			self.name, '{0:.2f}'.format(self.bill_amount),

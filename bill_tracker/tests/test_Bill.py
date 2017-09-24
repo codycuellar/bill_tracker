@@ -241,7 +241,5 @@ class TestBill(TestCase):
 		self.assertFalse(bill.overdue)
 
 
-
-
 if __name__ == '__main__':
 	unittest.main()
