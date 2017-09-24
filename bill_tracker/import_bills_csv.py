@@ -7,7 +7,7 @@ def csv_to_dict(csv_file):
     with open(csv_file, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            core.current_bills.append(core.Bills(**row))
+            core.current_bills.append(core.Bill(**row))
 
 
 csv_file = os.path.join(core.data_dir, 'bills.csv')
