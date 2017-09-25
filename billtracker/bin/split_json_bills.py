@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import os
 import json
 from billtracker import core
@@ -13,7 +15,8 @@ with open(cfg.json_db_path, 'r') as json_data:
 
 for bill in bills_dict:
     bill['next_due_date'] = None
-    del bill['due_date']
+    if 'due_date' in bill:
+        del bill['due_date']
     bill = core.Bill(**bill)
     bill.due = False
     bill.paid = False
