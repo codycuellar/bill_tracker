@@ -1,7 +1,7 @@
 import os
 import json
-from bill_tracker import core
-from bill_tracker import config as cfg
+from billtracker import core
+from billtracker import config as cfg
 
 
 current_bills = []
