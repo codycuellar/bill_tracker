@@ -17,6 +17,7 @@ setup(
 	install_requires=[],
 	dependency_links=[],
 	entry_points={
-		'console_scripts': ['notify=billtracker.notify:startup'],
+		'console_scripts': ['notify=billtracker.notify:startup',
+							'pay=billtracker.pay_bills:startup'],
 		}
 	)
