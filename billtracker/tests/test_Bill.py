@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from bill_tracker import core
+from billtracker import core
 import datetime as dt
 from datetime import timedelta as td
 import json
@@ -10,11 +10,11 @@ class TestBill(TestCase):
 	def setUp(self):
 		core.Bill.update_calendar()
 		self.bill_dict = {
-			"account_number": 3760,
+			"account_number": 1000,
 			"amount_due": 0.0,
 			"automatic": False,
 			"bill_account_type": "Check",
-			"bill_amount": 384.6,
+			"bill_amount": 200,
 			"category": "Loan",
 			"due": False,
 			"next_due_date": None,
@@ -68,8 +68,8 @@ class TestBill(TestCase):
 				2048,
 				2049
 			],
-			"name": "Wings (Cars)",
-			"outstanding_balance": 13713.43,
+			"name": "Test Bill",
+			"outstanding_balance": 10000,
 			"overdue": False,
 			"paid": True,
 			"variable_amount": False}

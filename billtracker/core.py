@@ -29,7 +29,8 @@ def load_bills():
 def all_bills_to_json():
 	json_path = os.path.join(cfg.data_dir, 'bills')
 	for bill in current_bills:
-		with open(os.path.join(json_path, bill.name), 'w') as f:
+		bill_name = bill.name + '.json'
+		with open(os.path.join(json_path, bill_name), 'w') as f:
 			f.write(bill.to_json())
 
 
