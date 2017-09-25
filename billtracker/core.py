@@ -61,15 +61,15 @@ def send_email(DEBUG=False):
 		   (round(Bill.current_outstanding_total, 2), bills_due,
 			bills_past_due, recently_paid)
 	date = dt.date.today()
-	header = 'From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n' % (
-		'noreply@gmail.com', ', '.join(cfg.email_to_addresses),
-		('%s Bill Updates $%s - %s' % (
+	TEXT = MIMEText(body)
+	TEXT['From'] = cfg.email_from_address
+	TEXT['To'] = ','.join(cfg.email_to_addresses)
+	TEXT['Subject'] = '%s Bill Updates $%s - %s' % (
 			cfg.email_title, Bill.current_outstanding_total,
-			date.strftime('%m-%d-%Y'))))
-	msg = header + MIMEText(body).as_string()
+			date.strftime('%m-%d-%Y'))
 
 	if DEBUG:
-		logger.debug(msg)
+		logger.debug(TEXT.as_string())
 	else:
 		cfg.email_server.ehlo()
 		cfg.email_server.starttls()
@@ -78,7 +78,8 @@ def send_email(DEBUG=False):
 		password = password[::-1]
 		cfg.email_server.login(cfg.email_from_address, password)
 		cfg.email_server.sendmail(cfg.email_from_address,
-								  cfg.email_to_addresses, msg)
+								  cfg.email_to_addresses,
+								  TEXT.as_string())
 		cfg.email_server.close()
 
 
@@ -175,7 +176,6 @@ class Bill(object):
 
 	def pay_bill(self):
 		"""Pay manual bills"""
-		logger.info('Paying bill %s' % self.name)
 		if self.outstanding_balance:
 			logger.info('Subtracting outstanding balance.')
 			self.outstanding_balance -= self.amount_due
@@ -229,7 +229,7 @@ class Bill(object):
 
 		# Set attributes for paid / past-due bills
 		elif self.next_due_date in self.past_three_days:
-			if self.automatic:  # for auto-pay bills
+			if self.automatic and not self.paid:  # for auto-pay bills
 				self.pay_bill()
 			elif not self.paid:
 				self.set_overdue()
