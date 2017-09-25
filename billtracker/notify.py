@@ -26,14 +26,11 @@ def startup():
 							  console_level=logging.DEBUG)
 	main(DEBUG=args.debug)
 
+
 def main(DEBUG=False):
 	core.load_bills()
-	for bill in core.current_bills:
-		print bill.next_due_date
 	core.check_due_dates()
 	core.all_bills_to_json()
-	for bill in core.current_bills:
-		print bill.next_due_date
 	core.send_email(DEBUG=DEBUG)
 
 
