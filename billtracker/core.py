@@ -220,8 +220,9 @@ class Bill(object):
 		This function first updates the due day if it's in the next two weeks.
 		:return: 
 		"""
-		if self.next_due_date in self.next_two_weeks:  # all automatic bills
-			if self.automatic or not self.paid:
+		if self.next_due_date in self.next_two_weeks:
+			if self.automatic and not self.due or not self.paid \
+					and not self.due:
 				self.set_due()
 			status = self.get_status_as_str()
 			logger.debug(status)
@@ -231,11 +232,11 @@ class Bill(object):
 		elif self.next_due_date in self.past_three_days:
 			if self.automatic and not self.paid:  # for auto-pay bills
 				self.pay_bill()
-			elif not self.paid:
+			elif not self.paid and not self.set_overdue():
 				self.set_overdue()
 			return
 
-		else:  # automatic bills
+		else:
 			if self.automatic or self.paid:
 				self.clear_bill()
 
