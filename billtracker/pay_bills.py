@@ -5,11 +5,13 @@ import logging
 
 logger = logging.getLogger()
 
+
 def startup():
 	cfg.configure_logging(logger, logname='pay_bills',
 						  log_level=logging.INFO,
 						  file_level=logging.INFO,
 						  console_level=logging.DEBUG)
+	main()
 
 
 def main():
@@ -30,4 +32,4 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	startup()
