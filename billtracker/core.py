@@ -38,7 +38,7 @@ def check_due_dates():
 	Bill.update_calendar()
 	for bill in current_bills:
 		bill.set_status()
-		if bill.next_due_date in bill.next_two_weeks[:7]:
+		if bill.due:
 			Bill.current_outstanding_total += bill.amount_due
 
 
