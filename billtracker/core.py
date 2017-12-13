@@ -43,17 +43,22 @@ def check_due_dates():
 
 
 def send_email(DEBUG=False):
-	bills_due = ''
-	bills_past_due = ''
-	recently_paid = ''
+	bills_due = []
+	bills_past_due = []
+	recently_paid = []
 	for bill in current_bills:
-		formatted = bill.format_for_email()
 		if bill.due and not bill.overdue:
-			bills_due += formatted
+			bills_due.append(bill)
 		elif bill.overdue:
-			bills_past_due += formatted
+			bills_past_due.append(bill)
 		elif bill.paid:
-			recently_paid += formatted
+			recently_paid.append(bill)
+	bills_due = ''.join([bill.format_for_email() for bill in 
+			     sorted(bills_due, key=lambda x: x.next_due_date)])
+	bills_past_due = ''.join([bill.format_for_email() for bill in
+				 sorted(bills_past_due, key=lambda x: x.next_due_date)])
+	recently_paid = ''.join([bill.format_for_email() for bill in
+				 sorted(recently_paid, key=lambda x: x.next_due_date)])
 	body = 'Total amount due in next week: $%s\n\n' \
 		   'BILLS DUE:\n%s\n\n' \
 		   'BILLS OVERDUE:\n%s\n\n' \
@@ -162,7 +167,7 @@ class Bill(object):
 		except AttributeError:
 			due_date = 'Unknown'
 		return '\n\t%s - $%s (%s)%s' % (
-			self.name, '{0:.2f}'.format(self.bill_amount),
+			self.name, '{0:.2f}'.format(self.amount_due),
 			due_date, manual)
 
 	def to_json(self):
