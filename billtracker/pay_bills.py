@@ -24,6 +24,15 @@ def main():
 			logger.debug('User input: %s' % response)
 			if response.lower() in ['yes', 'y']:
 				bill.pay_bill()
+				if bill.variable_amount:
+					while True:
+						print('\n How much was this bill?')
+						response = raw_input("> ")
+						try:
+							bill.bill_amount = float(response)
+							break
+						except ValueError:
+							continue
 				logger.info("Bill %s marked as paid." % bill.name)
 			else:
 				logger.info('Bill not paid.')
